@@ -2,7 +2,7 @@ name: Run Clicker Job
 
 on:
   schedule:
-    # Запускает скрипт каждые 59 минут
+    # Запускает скрипт каждые
    - cron: '0 * * * *'
   workflow_dispatch:
     # Эта строка позволяет запускать скрипт вручную с вкладки Actions
@@ -15,7 +15,7 @@ jobs:
       - name: 1. Скачиваем код из репозитория
         uses: actions/checkout@v3
 
-      - name: 2. Устанавливаем Python 3.10
+      - name: 2. Устанавливаем Python 3.12
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
