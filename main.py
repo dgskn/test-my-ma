@@ -232,11 +232,44 @@ async def main_game_loop(websocket, initial_state, account_name):
 
 async def main():
     """
-    Основная функция, которая обрабатывает все аккаунты ОДИН РАЗ и завершается.
+    Основная функция с логикой синхронизации для предсказуемого времени выполнения.
     """
-    print(f"\n{'=' * 50}\n--- ЗАПУСК ЦИКЛА ОБРАБОТКИ АККАУНТОВ ---\n{'=' * 50}")
+    TARGET_MINUTE = 35  # <-- Минута часа, в которую должно начаться реальное выполнение
 
+    # Получаем текущее время по UTC
+    now_utc = datetime.now(timezone.utc)
+    current_minute = now_utc.minute
+    current_second = now_utc.second
+
+    print(f"--- Скрипт запущен GitHub в {now_utc.strftime('%H:%M:%S')} UTC. Целевое время выполнения: XX:{TARGET_MINUTE}:00 UTC. ---")
+
+    # Если мы запустились ДО целевой минуты
+    if current_minute < TARGET_MINUTE:
+        # Рассчитываем, сколько секунд нужно подождать
+        wait_seconds = (TARGET_MINUTE - current_minute) * 60 - current_second
+        print(f"--- Ожидаем {wait_seconds} секунд для синхронизации времени... ---")
+        await asyncio.sleep(wait_seconds)
+
+    # Если мы запустились ПОСЛЕ целевой минуты (из-за большой задержки GitHub)
+    elif current_minute > TARGET_MINUTE:
+        print(f"--- Запуск произошел с опозданием. Начинаем выполнение немедленно. ---")
+
+    # Если мы запустились ровно в целевую минуту
+    else:
+        print(f"--- Запуск произошел точно в целевое время. Начинаем выполнение. ---")
+
+    # --- НАЧАЛО ОСНОВНОЙ ЛОГИКИ СКРИПТА ---
+    
+    start_time = datetime.now(timezone.utc)
+    print(f"\n{'=' * 50}\n--- НАЧАЛО РАБОТЫ: {start_time.strftime('%Y-%m-%d %H:%M:%S')} UTC ---\n{'=' * 50}")
+
+    # Запускаем цикл по всем аккаунтам, как и раньше
     for i, account in enumerate(ACCOUNTS):
+        # Пропускаем закомментированные аккаунты
+        if not account["cookie"]:
+            print(f"--- Пропускаем закомментированный аккаунт #{i+1} ---")
+            continue
+        
         await supervisor_for_account(account)
         print(f"\n--- ЗАВЕРШЕНА РАБОТА С АККАУНТОМ: {account['name']} ---")
 
@@ -245,9 +278,11 @@ async def main():
             print(f"--- Пауза {pause_duration} секунд перед следующим аккаунтом... ---")
             await asyncio.sleep(pause_duration)
 
-    print("\n\n--- ВСЕ АККАУНТЫ ОБРАБОТАНЫ. ЗАВЕРШЕНИЕ РАБОТЫ СКРИПТА. ---")
+    end_time = datetime.now(timezone.utc)
+    print(f"\n\n--- ВСЕ АККАУНТЫ ОБРАБОТАНЫ. ЗАВЕРШЕНИЕ РАБОТЫ: {end_time.strftime('%Y-%m-%d %H:%M:%S')} UTC ---")
 
 
 if __name__ == "__main__":
 
     asyncio.run(main())
+
