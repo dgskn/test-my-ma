@@ -1,0 +1,43 @@
+name: Run Clicker Job
+
+on:
+  schedule:
+    # Запускает скрипт каждые 59 минут
+    - cron: '*/59 * * * *'
+  workflow_dispatch:
+    # Эта строка позволяет запускать скрипт вручную с вкладки Actions
+
+jobs:
+  run-clicker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Скачиваем код из репозитория
+        uses: actions/checkout@v3
+
+      - name: 2. Устанавливаем Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 3. Устанавливаем зависимости
+        run: pip install -r requirements.txt
+
+      - name: 4. Запускаем основной скрипт
+        env:
+          # Здесь мы передаем секреты из GitHub в наш Python скрипт
+          WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
+          PET_API_URL: ${{ secrets.PET_API_URL }}
+          TARGET_ORIGIN: ${{ secrets.TARGET_ORIGIN }}
+          ACCOUNT_1_COOKIE: ${{ secrets.ACCOUNT_1_COOKIE }}
+          ACCOUNT_2_COOKIE: ${{ secrets.ACCOUNT_2_COOKIE }}
+          ACCOUNT_3_COOKIE: ${{ secrets.ACCOUNT_3_COOKIE }}
+          ACCOUNT_4_COOKIE: ${{ secrets.ACCOUNT_4_COOKIE }}
+          ACCOUNT_5_COOKIE: ${{ secrets.ACCOUNT_5_COOKIE }}
+          ACCOUNT_6_COOKIE: ${{ secrets.ACCOUNT_6_COOKIE }}
+          ACCOUNT_7_COOKIE: ${{ secrets.ACCOUNT_7_COOKIE }}
+          ACCOUNT_8_COOKIE: ${{ secrets.ACCOUNT_8_COOKIE }}
+          ACCOUNT_9_COOKIE: ${{ secrets.ACCOUNT_9_COOKIE }}
+          ACCOUNT_10_COOKIE: ${{ secrets.ACCOUNT_10_COOKIE }}
+          ACCOUNT_11_COOKIE: ${{ secrets.ACCOUNT_11_COOKIE }}
+        run: python main.py
