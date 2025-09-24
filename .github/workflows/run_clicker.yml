@@ -3,7 +3,7 @@ name: Run Clicker Job
 on:
   schedule:
     # Запускает скрипт каждые
-   - cron: '15 * * * *'
+   - cron: '13 * * * *'
   workflow_dispatch:
     # Эта строка позволяет запускать скрипт вручную с вкладки Actions
 
