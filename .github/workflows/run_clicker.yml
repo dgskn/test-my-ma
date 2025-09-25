@@ -28,6 +28,7 @@ jobs:
           # Здесь мы передаем секреты из GitHub в наш Python скрипт
           WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }}
           PET_API_URL: ${{ secrets.PET_API_URL }}
+          QUEST_API_URL: ${{ secrets.QUEST_API_URL }} 
           TARGET_ORIGIN: ${{ secrets.TARGET_ORIGIN }}
           ACCOUNT_1_COOKIE: ${{ secrets.ACCOUNT_1_COOKIE }}
           ACCOUNT_2_COOKIE: ${{ secrets.ACCOUNT_2_COOKIE }}
