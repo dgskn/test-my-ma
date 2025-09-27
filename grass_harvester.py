@@ -11,7 +11,7 @@ GARDEN_API_URL = os.getenv("GARDEN_API_URL")
 TARGET_ORIGIN = os.getenv("TARGET_ORIGIN")
 ACCOUNTS = [
     {"name": "Аккаунт 1", "cookie": os.getenv("ACCOUNT_1_COOKIE")},
-    #{"name": "Аккаунт 2", "cookie": os.getenv("ACCOUNT_2_COOKIE")},
+    {"name": "Аккаунт 2", "cookie": os.getenv("ACCOUNT_2_COOKIE")},
     {"name": "Аккаунт 3", "cookie": os.getenv("ACCOUNT_3_COOKIE")},
     {"name": "Аккаунт 4", "cookie": os.getenv("ACCOUNT_4_COOKIE")},
     {"name": "Аккаунт 5", "cookie": os.getenv("ACCOUNT_5_COOKIE")},
