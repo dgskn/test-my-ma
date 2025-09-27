@@ -3,6 +3,7 @@ import requests
 import os
 from datetime import datetime, timezone, timedelta
 import random
+import time
 
 # --- НАСТРОЙКИ ---
 
@@ -20,7 +21,7 @@ ACCOUNTS = [
     {"name": "Аккаунт 10", "cookie": os.getenv("ACCOUNT_10_COOKIE")},
     {"name": "Аккаунт 11", "cookie": os.getenv("ACCOUNT_11_COOKIE")},
     {"name": "Аккаунт 1", "cookie": os.getenv("ACCOUNT_1_COOKIE")},
-   # {"name": "Аккаунт 2", "cookie": os.getenv("ACCOUNT_2_COOKIE")},
+    #{"name": "Аккаунт 2", "cookie": os.getenv("ACCOUNT_2_COOKIE")},
 ]
 
 # Травы, которые будем сажать (индекс соответствует номеру грядки)
@@ -29,16 +30,23 @@ GROWTH_DURATION_HOURS = 8
 
 # --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
 
+# ### ИЗМЕНЕНИЕ 1: Более надежная функция парсинга времени ###
 def parse_time(time_str):
-    """Обрезает и парсит строку времени, устойчиво к ошибкам."""
+    """Обрезает и парсит строку времени, гарантированно создавая timezone-aware объект."""
     try:
-        # Обрезаем до 6 знаков после точки для совместимости
+        # Убираем 'Z' и обрезаем наносекунды до микросекунд (6 знаков)
+        time_str = time_str.replace('Z', '')
         if '.' in time_str:
             parts = time_str.split('.')
             parts[1] = parts[1][:6]
             time_str = '.'.join(parts)
-        return datetime.fromisoformat(time_str.replace('Z', '+00:00'))
-    except (ValueError, TypeError):
+        
+        # Создаем "наивный" объект времени
+        dt_naive = datetime.fromisoformat(time_str)
+        # Принудительно делаем его "знающим" о UTC
+        dt_aware = dt_naive.replace(tzinfo=timezone.utc)
+        return dt_aware
+    except (ValueError, TypeError, AttributeError):
         return None
 
 # --- ОСНОВНАЯ ЛОГИКА ---
@@ -79,25 +87,25 @@ def run_garden_logic_for_account(account_name, account_cookie):
         planted_beds = [bed for bed in beds if bed is not None]
         
         if planted_beds:
-            harvest_times = [parse_time(bed[1]) + timedelta(hours=GROWTH_DURATION_HOURS) for bed in planted_beds]
-            latest_harvest_time = max(t for t in harvest_times if t is not None)
-            now_utc = datetime.now(timezone.utc)
+            harvest_times = [parse_time(bed[1]) + timedelta(hours=GROWTH_DURATION_HOURS) for bed in planted_beds if bed and len(bed) > 1]
+            valid_harvest_times = [t for t in harvest_times if t is not None]
 
-            wait_seconds = (latest_harvest_time - now_utc).total_seconds()
-            
-            if wait_seconds > 0:
-                print(f"-> [{account_name}] 2. Сад еще не созрел. Ожидаем {int(wait_seconds // 60)} мин {int(wait_seconds % 60)} сек...")
-                time.sleep(wait_seconds)
-            else:
-                print(f"-> [{account_name}] 2. Сад созрел. Начинаем сбор.")
+            if valid_harvest_times:
+                latest_harvest_time = max(valid_harvest_times)
+                now_utc = datetime.now(timezone.utc)
+                wait_seconds = (latest_harvest_time - now_utc).total_seconds()
+                
+                if wait_seconds > 0:
+                    print(f"-> [{account_name}] 2. Сад еще не созрел. Ожидаем {int(wait_seconds // 60)} мин {int(wait_seconds % 60)} сек...")
+                    time.sleep(wait_seconds)
+                else:
+                    print(f"-> [{account_name}] 2. Сад созрел. Начинаем сбор.")
         else:
              print(f"-> [{account_name}] 2. Сад пуст. Переходим к посадке.")
 
         # --- Шаг 3: Цикл сбора ---
-        # Получаем свежий статус, чтобы убедиться, что всё созрело
         current_status_data = send_request("Status")
         beds_to_check = current_status_data.get('result', [{}])[0].get('beds', [])
-        
         beds_to_collect = [i for i, bed in enumerate(beds_to_check) if bed is not None]
 
         if beds_to_collect:
@@ -105,7 +113,7 @@ def run_garden_logic_for_account(account_name, account_cookie):
             for bed_index in beds_to_collect:
                 print(f"   - Собираем грядку #{bed_index}...")
                 send_request("CollectHerb", bed_index)
-                send_request("Status") # Имитируем запрос статуса после каждого действия
+                send_request("Status")
                 time.sleep(random.uniform(0.3, 0.5))
 
         # --- Шаг 4: Цикл посадки ---
@@ -119,11 +127,10 @@ def run_garden_logic_for_account(account_name, account_cookie):
                 herb_to_plant = HERBS_TO_PLANT[bed_index]
                 print(f"   - Сажаем '{herb_to_plant}' на грядку #{bed_index}...")
                 params = {"herb": herb_to_plant}
-                # API требует параметр "bed" только для 2-й и 3-й грядки
                 if bed_index > 0:
                     params["bed"] = bed_index
                 send_request("PlantHerb", params)
-                last_status = send_request("Status") # Сохраняем последний статус
+                last_status = send_request("Status")
                 time.sleep(random.uniform(0.3, 0.5))
             
             # --- Шаг 5: Финальная проверка ---
@@ -133,7 +140,7 @@ def run_garden_logic_for_account(account_name, account_cookie):
                     print(f"-> ✅ [{account_name}] 5. Успех! Все грядки успешно собраны и засажены.")
                 else:
                     print(f"-> ❌ [{account_name}] 5. КРИТИЧЕСКАЯ ОШИБКА! Не все грядки были засажены. Требуется проверка.")
-            else: # Если ничего не сажали, проверяем, что всё собрано
+            else:
                 if not beds_to_collect:
                     print(f"-> ✅ [{account_name}] 5. Успех! Сад уже был пуст и ничего не требовалось делать.")
                 else:
@@ -151,11 +158,11 @@ async def main():
 
     for i, account in enumerate(active_accounts):
         print(f"\n--- НАЧАТА РАБОТА С АККАУНТОМ: {account['name']} ({i+1}/{len(active_accounts)}) ---")
-        # Запускаем блокирующую логику в отдельном потоке
         await asyncio.to_thread(run_garden_logic_for_account, account['name'], account['cookie'])
         
         if i < len(active_accounts) - 1:
-            pause_duration = random.randint(20, 60)
+            # ### ИЗМЕНЕНИЕ 2: Уменьшена пауза между аккаунтами ###
+            pause_duration = random.randint(2, 5)
             print(f"--- Пауза {pause_duration} секунд перед следующим аккаунтом... ---")
             await asyncio.sleep(pause_duration)
     
