@@ -11,6 +11,8 @@ import time
 GARDEN_API_URL = os.getenv("GARDEN_API_URL")
 TARGET_ORIGIN = os.getenv("TARGET_ORIGIN")
 ACCOUNTS = [
+    {"name": "Аккаунт 1", "cookie": os.getenv("ACCOUNT_1_COOKIE")},
+    {"name": "Аккаунт 2", "cookie": os.getenv("ACCOUNT_2_COOKIE")},
     {"name": "Аккаунт 3", "cookie": os.getenv("ACCOUNT_3_COOKIE")},
     {"name": "Аккаунт 4", "cookie": os.getenv("ACCOUNT_4_COOKIE")},
     {"name": "Аккаунт 5", "cookie": os.getenv("ACCOUNT_5_COOKIE")},
@@ -20,9 +22,7 @@ ACCOUNTS = [
     {"name": "Аккаунт 9", "cookie": os.getenv("ACCOUNT_9_COOKIE")},
     {"name": "Аккаунт 10", "cookie": os.getenv("ACCOUNT_10_COOKIE")},
     {"name": "Аккаунт 11", "cookie": os.getenv("ACCOUNT_11_COOKIE")},
-    {"name": "Аккаунт 1", "cookie": os.getenv("ACCOUNT_1_COOKIE")},
-    #{"name": "Аккаунт 2", "cookie": os.getenv("ACCOUNT_2_COOKIE")},
-]
+    ]
 
 # Травы, которые будем сажать (индекс соответствует номеру грядки)
 HERBS_TO_PLANT = ["MidnightHenbane", "SerpentRoot", "SylvannaFlytrap"]
@@ -96,7 +96,7 @@ def run_garden_logic_for_account(account_name, account_cookie):
                 wait_seconds = (latest_harvest_time - now_utc).total_seconds()
                 
                 if wait_seconds > 0:
-                    print(f"-> [{account_name}] 2. Сад еще не созрел. Ожидаем {int(wait_seconds // 60)} мин {int(wait_seconds % 60)} сек...")
+                   print(f"-> [{account_name}] 2. Сад еще не созрел. Ожидаем {int(wait_seconds // 60)} мин {int(wait_seconds % 60)} сек...", flush=True)
                     time.sleep(wait_seconds)
                 else:
                     print(f"-> [{account_name}] 2. Сад созрел. Начинаем сбор.")
