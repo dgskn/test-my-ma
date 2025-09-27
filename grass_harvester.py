@@ -11,8 +11,6 @@ import time
 GARDEN_API_URL = os.getenv("GARDEN_API_URL")
 TARGET_ORIGIN = os.getenv("TARGET_ORIGIN")
 ACCOUNTS = [
-    {"name": "Аккаунт 1", "cookie": os.getenv("ACCOUNT_1_COOKIE")},
-    {"name": "Аккаунт 2", "cookie": os.getenv("ACCOUNT_2_COOKIE")},
     {"name": "Аккаунт 3", "cookie": os.getenv("ACCOUNT_3_COOKIE")},
     {"name": "Аккаунт 4", "cookie": os.getenv("ACCOUNT_4_COOKIE")},
     {"name": "Аккаунт 5", "cookie": os.getenv("ACCOUNT_5_COOKIE")},
@@ -22,6 +20,8 @@ ACCOUNTS = [
     {"name": "Аккаунт 9", "cookie": os.getenv("ACCOUNT_9_COOKIE")},
     {"name": "Аккаунт 10", "cookie": os.getenv("ACCOUNT_10_COOKIE")},
     {"name": "Аккаунт 11", "cookie": os.getenv("ACCOUNT_11_COOKIE")},
+    {"name": "Аккаунт 1", "cookie": os.getenv("ACCOUNT_1_COOKIE")},
+    {"name": "Аккаунт 2", "cookie": os.getenv("ACCOUNT_2_COOKIE")},
 ]
 
 # Травы, которые будем сажать (индекс соответствует номеру грядки)
