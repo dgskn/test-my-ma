@@ -22,7 +22,7 @@ ACCOUNTS = [
     {"name": "Аккаунт 9", "cookie": os.getenv("ACCOUNT_9_COOKIE")},
     {"name": "Аккаунт 10", "cookie": os.getenv("ACCOUNT_10_COOKIE")},
     {"name": "Аккаунт 11", "cookie": os.getenv("ACCOUNT_11_COOKIE")},
-    ]
+]
 
 # Травы, которые будем сажать (индекс соответствует номеру грядки)
 HERBS_TO_PLANT = ["MidnightHenbane", "SerpentRoot", "SylvannaFlytrap"]
@@ -30,7 +30,6 @@ GROWTH_DURATION_HOURS = 8
 
 # --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
 
-# ### ИЗМЕНЕНИЕ 1: Более надежная функция парсинга времени ###
 def parse_time(time_str):
     """Обрезает и парсит строку времени, гарантированно создавая timezone-aware объект."""
     try:
@@ -96,7 +95,8 @@ def run_garden_logic_for_account(account_name, account_cookie):
                 wait_seconds = (latest_harvest_time - now_utc).total_seconds()
                 
                 if wait_seconds > 0:
-                   print(f"-> [{account_name}] 2. Сад еще не созрел. Ожидаем {int(wait_seconds // 60)} мин {int(wait_seconds % 60)} сек...", flush=True)
+                    # ### ИЗМЕНЕНИЕ: Добавлен flush=True ###
+                    print(f"-> [{account_name}] 2. Сад еще не созрел. Ожидаем {int(wait_seconds // 60)} мин {int(wait_seconds % 60)} сек...", flush=True)
                     time.sleep(wait_seconds)
                 else:
                     print(f"-> [{account_name}] 2. Сад созрел. Начинаем сбор.")
@@ -161,7 +161,6 @@ async def main():
         await asyncio.to_thread(run_garden_logic_for_account, account['name'], account['cookie'])
         
         if i < len(active_accounts) - 1:
-            # ### ИЗМЕНЕНИЕ 2: Уменьшена пауза между аккаунтами ###
             pause_duration = random.randint(2, 5)
             print(f"--- Пауза {pause_duration} секунд перед следующим аккаунтом... ---")
             await asyncio.sleep(pause_duration)
