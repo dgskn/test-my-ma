@@ -1,0 +1,60 @@
+name: Run Potion Brewer Job
+
+on:
+  schedule:
+    # Расписание для 9 варок, каждые 2 часа, начиная с 06:30 UTC
+    - cron: '30 6,12,18 * * *'  # 1-я трава (MidnightHenbane)
+    - cron: '30 8,14,20 * * *'  # 2-я трава (SerpentRoot)
+    - cron: '30 10,16,22 * * *' # 3-я трава (SylvannaFlytrap)
+  workflow_dispatch:
+    # Позволяет запускать вручную с выбором травы
+    inputs:
+      herb_number:
+        description: 'Номер травы для варки (1, 2 или 3)'
+        required: true
+        default: '1'
+
+jobs:
+  run-brewer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Скачиваем код из репозитория
+        uses: actions/checkout@v3
+
+      - name: 2. Устанавливаем Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: 3. Устанавливаем зависимости
+        run: pip install -r requirements.txt
+
+      - name: 4. Определяем, какую траву варить
+        id: herb_selector
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "herb_arg=${{ github.event.inputs.herb_number }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.schedule }}" == "30 6,12,18 * * *" ]]; then
+            echo "herb_arg=1" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.schedule }}" == "30 8,14,20 * * *" ]]; then
+            echo "herb_arg=2" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.schedule }}" == "30 10,16,22 * * *" ]]; then
+            echo "herb_arg=3" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 5. Запускаем скрипт варки эликсиров
+        env:
+          LABORATORY_API_URL: ${{ secrets.LABORATORY_API_URL }}
+          TARGET_ORIGIN: ${{ secrets.TARGET_ORIGIN }}
+          ACCOUNT_2_COOKIE: ${{ secrets.ACCOUNT_2_COOKIE }}
+          ACCOUNT_3_COOKIE: ${{ secrets.ACCOUNT_3_COOKIE }}
+          ACCOUNT_4_COOKIE: ${{ secrets.ACCOUNT_4_COOKIE }}
+          ACCOUNT_5_COOKIE: ${{ secrets.ACCOUNT_5_COOKIE }}
+          ACCOUNT_6_COOKIE: ${{ secrets.ACCOUNT_6_COOKIE }}
+          ACCOUNT_7_COOKIE: ${{ secrets.ACCOUNT_7_COOKIE }}
+          ACCOUNT_8_COOKIE: ${{ secrets.ACCOUNT_8_COOKIE }}
+          ACCOUNT_9_COOKIE: ${{ secrets.ACCOUNT_9_COOKIE }}
+          ACCOUNT_10_COOKIE: ${{ secrets.ACCOUNT_10_COOKIE }}
+          ACCOUNT_11_COOKIE: ${{ secrets.ACCOUNT_11_COOKIE }}
+        run: python potion_brewer.py ${{ steps.herb_selector.outputs.herb_arg }}
