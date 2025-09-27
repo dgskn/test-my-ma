@@ -1,0 +1,46 @@
+name: Run Grass Harvester Job
+
+on:
+  schedule:
+    # Запускает скрипт каждые 8 часов, за 2 часа до предполагаемого сбора.
+    # Время UTC: 05:00, 13:00, 21:00
+    - cron: '30 3,11,19 * * *'
+  workflow_dispatch:
+    # Позволяет запускать вручную
+
+jobs:
+  run-harvester:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Скачиваем код из репозитория
+        uses: actions/checkout@v3
+
+      - name: 2. Устанавливаем Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: 3. Устанавливаем зависимости
+        run: pip install -r requirements.txt
+
+      - name: 4. Запускаем скрипт для сбора травы
+        env:
+          # Передаем все те же секреты, что и для кликера + новый
+          GARDEN_API_URL: ${{ secrets.GARDEN_API_URL }}
+          WEBSOCKET_URL: ${{ secrets.WEBSOCKET_URL }} # Не используется, но передаем для унификации
+          PET_API_URL: ${{ secrets.PET_API_URL }} # Не используется, но передаем для унификации
+          QUEST_API_URL: ${{ secrets.QUEST_API_URL }} # Не используется, но передаем для унификации
+          TARGET_ORIGIN: ${{ secrets.TARGET_ORIGIN }}
+          ACCOUNT_1_COOKIE: ${{ secrets.ACCOUNT_1_COOKIE }}
+          ACCOUNT_2_COOKIE: ${{ secrets.ACCOUNT_2_COOKIE }}
+          ACCOUNT_3_COOKIE: ${{ secrets.ACCOUNT_3_COOKIE }}
+          ACCOUNT_4_COOKIE: ${{ secrets.ACCOUNT_4_COOKIE }}
+          ACCOUNT_5_COOKIE: ${{ secrets.ACCOUNT_5_COOKIE }}
+          ACCOUNT_6_COOKIE: ${{ secrets.ACCOUNT_6_COOKIE }}
+          ACCOUNT_7_COOKIE: ${{ secrets.ACCOUNT_7_COOKIE }}
+          ACCOUNT_8_COOKIE: ${{ secrets.ACCOUNT_8_COOKIE }}
+          ACCOUNT_9_COOKIE: ${{ secrets.ACCOUNT_9_COOKIE }}
+          ACCOUNT_10_COOKIE: ${{ secrets.ACCOUNT_10_COOKIE }}
+          ACCOUNT_11_COOKIE: ${{ secrets.ACCOUNT_11_COOKIE }}
+        run: python grass_harvester.py
