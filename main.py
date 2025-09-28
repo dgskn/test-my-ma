@@ -202,7 +202,7 @@ async def main():
         
         is_last_active = all(not acc["cookie"] for acc in ACCOUNTS[i + 1:])
         if not is_last_active:
-            pause_duration = random.randint(5, 15)
+            pause_duration = random.randint(0, 2)
             print(f"--- Пауза {pause_duration} секунд перед следующим аккаунтом... ---")
             await asyncio.sleep(pause_duration)
             
@@ -211,3 +211,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
