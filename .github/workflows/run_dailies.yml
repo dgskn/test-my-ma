@@ -1,0 +1,42 @@
+name: Run Daily Tasks Job
+
+on:
+  schedule:
+    # Запускает скрипт один раз в сутки в 20:45 UTC
+    - cron: '45 20 * * *'
+  workflow_dispatch:
+    # Позволяет запускать вручную для теста
+
+jobs:
+  run-dailies:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Скачиваем код из репозитория
+        uses: actions/checkout@v3
+
+      - name: 2. Устанавливаем Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: 3. Устанавливаем зависимости
+        run: pip install -r requirements.txt
+
+      - name: 4. Запускаем скрипт ежедневных задач
+        env:
+          PET_API_URL: ${{ secrets.PET_API_URL }}
+          QUEST_API_URL: ${{ secrets.QUEST_API_URL }}
+          TARGET_ORIGIN: ${{ secrets.TARGET_ORIGIN }}
+          ACCOUNT_1_COOKIE: ${{ secrets.ACCOUNT_1_COOKIE }}
+          ACCOUNT_2_COOKIE: ${{ secrets.ACCOUNT_2_COOKIE }}
+          ACCOUNT_3_COOKIE: ${{ secrets.ACCOUNT_3_COOKIE }}
+          ACCOUNT_4_COOKIE: ${{ secrets.ACCOUNT_4_COOKIE }}
+          ACCOUNT_5_COOKIE: ${{ secrets.ACCOUNT_5_COOKIE }}
+          ACCOUNT_6_COOKIE: ${{ secrets.ACCOUNT_6_COOKIE }}
+          ACCOUNT_7_COOKIE: ${{ secrets.ACCOUNT_7_COOKIE }}
+          ACCOUNT_8_COOKIE: ${{ secrets.ACCOUNT_8_COOKIE }}
+          ACCOUNT_9_COOKIE: ${{ secrets.ACCOUNT_9_COOKIE }}
+          ACCOUNT_10_COOKIE: ${{ secrets.ACCOUNT_10_COOKIE }}
+          ACCOUNT_11_COOKIE: ${{ secrets.ACCOUNT_11_COOKIE }}
+        run: python daily_tasks.py
