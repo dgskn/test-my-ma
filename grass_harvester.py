@@ -51,6 +51,13 @@ def parse_time(time_str):
 # --- ОСНОВНАЯ ЛОГИКА ---
 
 def run_garden_logic_for_account(account_name, account_cookie):
+ if account_name == "Аккаунт 1":
+        herbs_to_plant_for_this_run = ["MandrakeRoot", "GoblinThistle", "StingingNettle"]
+        print(f"-> [{account_name}] Обнаружен особый аккаунт. Будем сажать: {herbs_to_plant_for_this_run}")
+    else:
+        # Для всех остальных аккаунтов используем стандартный список
+        herbs_to_plant_for_this_run = HERBS_TO_PLANT
+    
     session = requests.Session()
     session.headers.update({
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
@@ -124,7 +131,7 @@ def run_garden_logic_for_account(account_name, account_cookie):
             print(f"-> [{account_name}] 4. Сажаем новые растения на грядки: {beds_to_plant}...")
             last_status = None
             for bed_index in beds_to_plant:
-                herb_to_plant = HERBS_TO_PLANT[bed_index]
+                herb_to_plant = herbs_to_plant_for_this_run[bed_index] 
                 print(f"   - Сажаем '{herb_to_plant}' на грядку #{bed_index}...")
                 params = {"herb": herb_to_plant}
                 if bed_index > 0:
