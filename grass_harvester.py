@@ -21,7 +21,7 @@ ACCOUNTS = [
     {"name": "Аккаунт 10", "cookie": os.getenv("ACCOUNT_10_COOKIE")},
     {"name": "Аккаунт 11", "cookie": os.getenv("ACCOUNT_11_COOKIE")},
     {"name": "Аккаунт 1", "cookie": os.getenv("ACCOUNT_1_COOKIE")},
-    #{"name": "Аккаунт 2", "cookie": os.getenv("ACCOUNT_2_COOKIE")},
+    {"name": "Аккаунт 2", "cookie": os.getenv("ACCOUNT_2_COOKIE")},
 ]
 
 # Травы, которые будем сажать по умолчанию
