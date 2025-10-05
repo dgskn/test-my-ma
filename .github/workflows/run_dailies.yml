@@ -3,7 +3,7 @@ name: Run Daily Tasks Job
 on:
   schedule:
     # Запускает скрипт один раз в сутки в 20:45 UTC
-    - cron: '45 20 * * *'
+    - cron: '14 20 * * *'
   workflow_dispatch:
     # Позволяет запускать вручную для теста
 
