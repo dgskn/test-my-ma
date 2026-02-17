@@ -50,8 +50,8 @@ def run_garden_logic_for_account(account_name, account_cookie):
     # ### НАЧАЛО ИСПРАВЛЕНИЯ ###
     # Выбираем, какие травы сажать, в зависимости от имени аккаунта
     if account_name == "Аккаунт 1":
-        herbs_to_plant_for_this_run = ["MandrakeRoot", "GoblinThistle", "StingingNettle"]
-        #herbs_to_plant_for_this_run = ["MidnightHenbane", "SerpentRoot", "SylvannaFlytrap"]
+        #herbs_to_plant_for_this_run = ["MandrakeRoot", "GoblinThistle", "StingingNettle"]
+        herbs_to_plant_for_this_run = ["MidnightHenbane", "SerpentRoot", "SylvannaFlytrap"]
         print(f"-> [{account_name}] Обнаружен особый аккаунт. Будем сажать: {herbs_to_plant_for_this_run}", flush=True)
     else:
         # Для всех остальных аккаунтов используем стандартный список
